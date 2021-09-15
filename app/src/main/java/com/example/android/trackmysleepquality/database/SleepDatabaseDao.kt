@@ -24,7 +24,7 @@ import java.sql.RowId
 interface SleepDatabaseDao {
 
     @Insert
-    fun insert(night: SleepNight)
+    suspend fun insert(night: SleepNight)
 
     @Update
     fun update(night: SleepNight)
@@ -39,6 +39,6 @@ interface SleepDatabaseDao {
     fun getAllNights(): LiveData<List<SleepNight>>
 
     @Query("SELECT * FROM daily_sleep_quality_table ORDER BY nightId DESC LIMIT 1")
-    fun getTonight(): SleepNight
+    fun getTonight(): SleepNight?
 }
 
