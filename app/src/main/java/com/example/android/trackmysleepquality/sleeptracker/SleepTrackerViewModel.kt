@@ -56,7 +56,7 @@ class SleepTrackerViewModel(
 
     //TODO (04) Define a variable, nights. Then getAllNights() from the database
     //and assign to the nights variable.
-    private var nights = database.getAllNights()
+    private val nights = database.getAllNights()
 
     //TODO (05) In an init block, initializeTonight(), and implement it to launch a coroutine
     //to getTonightFromDatabase().
@@ -74,7 +74,7 @@ class SleepTrackerViewModel(
     private suspend fun getTonightFromDatabase(): SleepNight? {
         return withContext(Dispatchers.IO) {
             var night = database.getTonight()
-            if (night?.startTimeMilli != night?.endTimeMilli) {
+            if (night?.endTimeMilli != night?.startTimeMilli) {
                 night = null
             }
             night
