@@ -16,6 +16,56 @@
 
 package com.example.android.trackmysleepquality.sleepquality
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.example.android.trackmysleepquality.database.SleepDatabaseDao
+import com.example.android.trackmysleepquality.database.SleepNight
+import kotlinx.coroutines.*
+
+class SleepQualityViewModel(
+        private val sleepNightKey: Long = 0L,
+        val database: SleepDatabaseDao) : ViewModel() {
+
+
+    private val viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    /**
+     * This method will be called when this ViewModel is no longer used and will be destroyed.
+     *
+     *
+     * It is useful when ViewModel observes some data and you need to clear this subscription to
+     * prevent a leak of this ViewModel.
+     */
+    override fun onCleared() {
+        super.onCleared()
+
+        viewModelJob.cancel()
+    }
+
+    private val _navigateToSleepTracker = MutableLiveData<Boolean?>()
+
+    val navigateToSleepTracker: LiveData<Boolean?>
+        get() = _navigateToSleepTracker
+
+    fun doneNavigating() {
+        _navigateToSleepTracker.value = null
+    }
+
+    fun onSetSleepQuality(quality: Int){
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                val tonight = database.get(sleepNightKey) ?: return@withContext
+                tonight.sleepQuality = quality
+                database.update(tonight)
+            }
+            _navigateToSleepTracker.value = true
+        }
+
+    }
+}
+
 //TODO (03) Using the code in SleepTrackerViewModel for reference, create SleepQualityViewModel
 //with coroutine setup and navigation setup.
 
