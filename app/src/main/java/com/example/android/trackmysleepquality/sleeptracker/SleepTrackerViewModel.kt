@@ -47,11 +47,30 @@ class SleepTrackerViewModel(
 
     //TODO (02)  Create three corresponding state variables. Assign them a Transformations
     //that tests it against the value of tonight.
+    val startButtonVisible = Transformations.map(tonight) {
+        it == null
+    }
 
-    //TODO (03) Verify app build and runs without errors.
+    val stopButtonVisible = Transformations.map(tonight) {
+        it != null
+    }
+
+    val clearButtonVisible = Transformations.map(nights) {
+        it?.isNotEmpty()
+    }
 
     //TODO (04) Using the familiar pattern, create encapsulated showSnackBarEvent variable
     //and doneShowingSnackbar() fuction.
+
+    private val _showSnackBarEvent = MutableLiveData<Boolean>()
+
+    val showSnackBarEvent: LiveData<Boolean>
+        get() = _showSnackBarEvent
+
+    fun doneShowSnackBarEvent(){
+        _showSnackBarEvent.value = null
+    }
+
 
     //TODO (06) In onClear(), set the value of _showOnSnackbarEvent to true.
 
@@ -159,6 +178,8 @@ class SleepTrackerViewModel(
         viewModelScope.launch {
             // Clear the database table.
             clear()
+
+            _showSnackBarEvent.value = true
 
             // And clear tonight since it's no longer in the database
             tonight.value = null
